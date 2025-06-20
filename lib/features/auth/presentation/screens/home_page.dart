@@ -53,7 +53,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const AuthGate(initialShowLoginScreen: true),
+                    builder: (_) => const AuthGate(),
                   ),
                 );
               });

@@ -5,20 +5,18 @@ import '../../../../core/common/entities/user.dart';
 
 class UserModel extends User {
   const UserModel({
-    required super.id,
-    super.email,
+    required super.uid,
+    required super.email,
     super.name,
-    super.photoUrl,
     required super.emailVerified,
   });
 
   /// Tworzy instancję `UserModel` na podstawie obiektu `User` z Firebase Auth.
-  factory UserModel.fromFirebaseAuth(firebase.User authUser) {
+  factory UserModel.fromFirebaseUser(firebase.User authUser) {
     return UserModel(
-      id: authUser.uid,
+      uid: authUser.uid,
       email: authUser.email,
       name: authUser.displayName,
-      photoUrl: authUser.photoURL,
       emailVerified: authUser.emailVerified,
     );
   }
@@ -28,10 +26,9 @@ class UserModel extends User {
   factory UserModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data() ?? {};
     return UserModel(
-      id: doc.id,
+      uid: doc.id,
       email: data['email'] as String,
       name: data['name'] as String?,
-      photoUrl: data['photoUrl'] as String?,
       emailVerified: data['emailVerified'] as bool? ?? false,
     );
   }
@@ -39,17 +36,16 @@ class UserModel extends User {
   /// Kopiuje obiekt, pozwalając na modyfikację wybranych pól.
   /// Niezbędne do niemutowalnego zarządzania stanem.
   UserModel copyWith({
-    String? id,
+    String? uid,
     String? email,
     String? name,
     String? photoUrl,
     bool? emailVerified,
   }) {
     return UserModel(
-      id: id ?? this.id,
+      uid: uid ?? this.uid,
       email: email ?? this.email,
       name: name ?? this.name,
-      photoUrl: photoUrl ?? this.photoUrl,
       emailVerified: emailVerified ?? this.emailVerified,
     );
   }
@@ -58,7 +54,6 @@ class UserModel extends User {
     return {
       'email': email,
       'name': name,
-      'photoUrl': photoUrl,
       'emailVerified': emailVerified,
     };
   }
