@@ -31,12 +31,6 @@ class _AuthGateState extends ConsumerState<AuthGate> {
           final user = snapshot.data;
           // Jeśli użytkownik się zalogował
           if (user != null) {
-            // Migruje dane lokalne do Firestore
-            // WidgetsBinding.instance.addPostFrameCallback((_) async {
-            //   final repository = ref.read(notesRepositoryProvider);
-            //   await repository.migrateLocalToFirestore();
-            //   ref.invalidate(notesProvider); // Odświeża listę notatek
-            // });
             _showLoginScreen = false;
           }
         }

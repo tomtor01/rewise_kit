@@ -35,6 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   material_design_icons_flutter: any
   shared_preferences: ^2.5.3
+  flutter_secure_storage: ^9.2.4
   flutter_riverpod: ^2.0.0
   riverpod_annotation: ^2.0.0
   equatable: ^2.0.7
