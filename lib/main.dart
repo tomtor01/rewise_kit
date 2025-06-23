@@ -1,19 +1,32 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/common/app/cache/cache.dart';
+import 'core/route/router.dart';
 import 'core/services/injection_container.dart';
 import 'core/theme/theme.dart';
 import 'core/theme/util.dart';
-import 'features/auth/presentation/screens/auth_gate.dart';
+import 'features/auth/presentation/app/providers/firebase_auth_provider.dart';
 import 'firebase_options.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await init();
-  runApp(const ProviderScope(child: MyApp()));
+  final container = ProviderContainer();
+  FirebaseUIAuth.configureProviders([
+    EmailAuthProvider(),
+    // i inne jesli dodam
+  ]);
+  container.read(authServiceProvider);
+  runApp(
+    UncontrolledProviderScope(
+      container: container,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -26,13 +39,13 @@ class MyApp extends StatelessWidget {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: Cache.instance.themeModeNotifier,
       builder: (_, mode, _) {
-        return MaterialApp(
+        return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'ReWiseKit',
           theme: theme.light(),
           darkTheme: theme.dark(),
           themeMode: mode,
-          home: const AuthGate(),
+          routerConfig: router,
         );
       },
     );

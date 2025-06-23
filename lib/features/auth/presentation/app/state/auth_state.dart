@@ -24,14 +24,18 @@ final class AuthFailure extends AuthState {
   List<Object?> get props => [message];
 }
 
-final class UserSignedUp extends AuthState {
-  const UserSignedUp();
+final class SignedUp extends AuthState {
+  final User user;
+
+  const SignedUp(this.user);
 }
 
-final class UserSignedIn extends AuthState {
-  const UserSignedIn();
+final class SignedIn extends AuthState {
+  final User user;
+
+  const SignedIn(this.user);
 }
 
-final class UserSignedOut extends AuthState {
-  const UserSignedOut();
+final class SignedOut extends AuthState {
+  const SignedOut();
 }

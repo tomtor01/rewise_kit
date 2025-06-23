@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rewise_kit/core/widgets/main_app_bar.dart';
 
 enum WindowSizeClass {
   compact, // < 600px szerokości
@@ -96,7 +97,7 @@ class AdaptiveLayout extends StatelessWidget {
 
 // Widget dla adaptacyjnego układu z opcjonalnym panelem bocznym
 class AdaptiveScaffold extends StatelessWidget {
-  final String title;
+  final String? title;
   final Widget body;
   final List<NavigationDestination>? navigationDestinations;
   final int? selectedIndex;
@@ -106,7 +107,7 @@ class AdaptiveScaffold extends StatelessWidget {
 
   const AdaptiveScaffold({
     super.key,
-    required this.title,
+    this.title,
     required this.body,
     this.navigationDestinations,
     this.selectedIndex,
@@ -125,12 +126,12 @@ class AdaptiveScaffold extends StatelessWidget {
         navigationDestinations != null;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
+      appBar: (title) != null ? AppBar(
+        title: Text(title!),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         actions: actions,
         scrolledUnderElevation: 0,
-      ),
+      ) : null,
       body: SafeArea(
         child:
             showSideNav
@@ -170,5 +171,64 @@ class AdaptiveScaffold extends StatelessWidget {
               ),
       floatingActionButton: floatingActionButton,
     );
+  }
+}
+
+class AdaptiveScaffoldWithNavigation extends StatelessWidget {
+  final List<NavigationDestination> destinations;
+  final int selectedIndex;
+  final ValueChanged<int> onDestinationSelected;
+  final Widget child;
+  final Widget? drawerActions;
+
+  const AdaptiveScaffoldWithNavigation({
+    super.key,
+    required this.destinations,
+    required this.selectedIndex,
+    required this.onDestinationSelected,
+    required this.child,
+    this.drawerActions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final windowSizeClass = ResponsiveLayout.getWindowSizeClass(context);
+    if (windowSizeClass != WindowSizeClass.compact) {
+      // NavigationRail dla large
+      return Scaffold(
+        appBar: MainAppBar(windowSizeClass: windowSizeClass),
+        body: Row(
+          children: [
+            NavigationRail(
+              selectedIndex: selectedIndex,
+              onDestinationSelected: onDestinationSelected,
+              labelType: NavigationRailLabelType.selected,
+              destinations:
+              destinations
+                  .map(
+                    (d) => NavigationRailDestination(
+                  icon: d.icon,
+                  selectedIcon: d.selectedIcon,
+                  label: Text(d.label),
+                ),
+              )
+                  .toList(),
+            ),
+            Expanded(child: child),
+          ],
+        ),
+      );
+    } else {
+      // NavigationBar dla mniejszych
+      return Scaffold(
+        appBar: MainAppBar(windowSizeClass: windowSizeClass),
+        body: child,
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: selectedIndex,
+          onDestinationSelected: onDestinationSelected,
+          destinations: destinations,
+        ),
+      );
+    }
   }
 }

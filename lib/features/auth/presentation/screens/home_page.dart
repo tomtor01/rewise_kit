@@ -1,10 +1,6 @@
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:rewise_kit/features/auth/presentation/screens/settings_screen.dart';
 import '../../../../core/widgets/responsive_layout.dart';
-import 'auth_gate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -23,53 +19,11 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final windowSizeClass = ResponsiveLayout.getWindowSizeClass(context);
-    final isUserLoggedIn = FirebaseAuth.instance.currentUser != null;
+    //final windowSizeClass = ResponsiveLayout.getWindowSizeClass(context);
+    //final isUserLoggedIn = FirebaseAuth.instance.currentUser != null;
 
     return AdaptiveScaffold(
-      title: isUserLoggedIn ? 'Notatki (Cloud)' : 'Notatki (Lokalne)',
-      actions: [
-        IconButton(
-          icon: Icon(isUserLoggedIn ? Icons.person : Icons.login),
-          onPressed: () {
-            if (isUserLoggedIn) {
-              Navigator.push(
-                context,
-                MaterialPageRoute<ProfileScreen>(
-                  builder: (context) => ProfileScreen(
-                    appBar: AppBar(
-                      title: const Text('Twój profil'),
-                    ),
-                    actions: [
-                      SignedOutAction((context) {
-                        Navigator.of(context).pop();
-                      })
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              setState(() {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const AuthGate(),
-                  ),
-                );
-              });
-            }
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.settings),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsPage()),
-            );
-          },
-        ),
-      ],
+      title: null,
       selectedIndex: _selectedIndex,
       onDestinationSelected: (index) {
         setState(() {
