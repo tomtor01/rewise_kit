@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,7 @@ Future<void> main() async {
     EmailAuthProvider(),
     // i inne jesli dodam
   ]);
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   container.read(authServiceProvider);
   runApp(
     UncontrolledProviderScope(

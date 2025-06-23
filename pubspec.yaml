@@ -50,6 +50,8 @@ dependencies:
   firebase_auth: ^5.6.0
   cloud_firestore: ^5.6.7
   firebase_ui_auth: ^1.16.1
+  firebase_crashlytics: ^4.3.7
+  firebase_analytics: ^11.5.0
 
 dev_dependencies:
   flutter_test:
