@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../main.dart';
+import '../../../../core/common/app/cache/cache.dart';
+import '../../../../core/common/app/cache/cache_helper.dart';
+import '../../../../core/services/injection_container.dart';
 
-class SettingsPage extends ConsumerWidget {
+class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(themeProvider);
-
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ustawienia'),
@@ -18,31 +17,35 @@ class SettingsPage extends ConsumerWidget {
           const SizedBox(height: 128),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: DropdownButtonFormField<ThemeMode>(
-              value: theme.themeMode,
-              decoration: const InputDecoration(
-                labelText: 'Tryb motywu',
-                border: OutlineInputBorder(),
-              ),
-
-              items: const [
-                DropdownMenuItem(
-                  value: ThemeMode.light,
-                  child: Text('Jasny'),
-                ),
-                DropdownMenuItem(
-                  value: ThemeMode.dark,
-                  child: Text('Ciemny'),
-                ),
-                DropdownMenuItem(
-                  value: ThemeMode.system,
-                  child: Text('Systemowy'),
-                ),
-              ],
-              onChanged: (mode) {
-                if (mode != null) {
-                  ref.read(themeProvider).setTheme(mode);
-                }
+            child: ValueListenableBuilder<ThemeMode>(
+              valueListenable: Cache.instance.themeModeNotifier,
+              builder: (_, mode, _) {
+                return DropdownButtonFormField<ThemeMode>(
+                  value: mode,
+                  decoration: const InputDecoration(
+                    labelText: 'Tryb motywu',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: const [
+                    DropdownMenuItem(
+                      value: ThemeMode.light,
+                      child: Text('Jasny'),
+                    ),
+                    DropdownMenuItem(
+                      value: ThemeMode.dark,
+                      child: Text('Ciemny'),
+                    ),
+                    DropdownMenuItem(
+                      value: ThemeMode.system,
+                      child: Text('Systemowy'),
+                    ),
+                  ],
+                  onChanged: (newMode) {
+                    if (newMode != null) {
+                      sl<CacheHelper>().cacheThemeMode(newMode);
+                    }
+                  },
+                );
               },
             ),
           ),

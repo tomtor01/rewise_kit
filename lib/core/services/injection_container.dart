@@ -1,0 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_it/get_it.dart';
+import 'package:rewise_kit/features/dashboard/data/datasources/dashboard_remote.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../features/auth/data/datasources/auth_remote.dart';
+import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/auth/domain/usecases/logout_usecase.dart';
+import '../../features/auth/domain/usecases/sign_in_usecase.dart';
+import '../../features/auth/domain/usecases/sign_up_usecase.dart';
+import '../../features/dashboard/data/repositories/dashboard_repository_impl.dart';
+import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
+import '../../features/dashboard/domain/usecases/get_user_data.dart';
+import '../../features/lessons/data/datasources/lesson_remote.dart';
+import '../../features/lessons/data/repositories/lesson_repository_impl.dart';
+import '../../features/lessons/domain/repositories/lesson_repository.dart';
+import '../../features/lessons/domain/usecases/create_lesson_usecase.dart';
+import '../../features/lessons/domain/usecases/get_created_lessons_usecase.dart';
+import '../../features/lessons/domain/usecases/get_lesson_by_id_usecase.dart';
+import '../../features/lessons/domain/usecases/get_saved_lessons_usecase.dart';
+import '../../features/lessons/domain/usecases/save_lesson_usecase.dart';
+import '../../features/lessons/domain/usecases/search_lessons_usecase.dart';
+import '../../features/lessons/domain/usecases/unsave_lesson_usecase.dart';
+import '../common/app/cache/cache_helper.dart';
+
+part 'injection_container.main.dart';
