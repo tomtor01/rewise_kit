@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/providers/firebase_auth_provider.dart';
-import '../screens/home_page.dart';
+import '../../../lessons/presentation/screens/home_page.dart';
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});

@@ -58,19 +58,21 @@ final router = GoRouter(
       builder: (context, state) => const RegisterScreen(),
     ),
     GoRoute(
+      path: '/lesson/:lessonId',
+      // Dodaj ten klucz, aby trasa renderowała się na głównym nawigatorze
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) {
+        final lessonId = state.pathParameters['lessonId']!;
+        return LessonScreen(lessonId: lessonId);
+      },
+    ),
+    GoRoute(
       path: '/profile',
       builder: (context, state) {
         return ProfileScreen(
           appBar: AppBar(
             title: const Text('Twój profil'),
           ),
-          actions: [
-            SignedOutAction((context) {
-              // Po wylogowaniu, zdejmij ekran profilu ze stosu,
-              // aby wrócić do poprzedniego widoku.
-              context.pop();
-            })
-          ],
         );
       },
     ),

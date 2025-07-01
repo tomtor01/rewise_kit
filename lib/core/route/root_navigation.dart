@@ -14,9 +14,9 @@ class RootNavigator extends StatelessWidget {
       label: 'Lekcje',
     ),
     NavigationDestination(
-      icon: Icon(Icons.bookmark_border),
-      selectedIcon: Icon(Icons.bookmark),
-      label: 'Zasoby',
+      icon: Icon(Icons.dashboard_outlined),
+      selectedIcon: Icon(Icons.dashboard),
+      label: 'Dashboard',
     ),
     NavigationDestination(
       icon: Icon(Icons.manage_accounts_outlined),
@@ -37,11 +37,6 @@ class RootNavigator extends StatelessWidget {
           initialLocation: index == navigationShell.currentIndex,
         );
       },
-      drawerActions: FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.add),
-        label: const Text('Stwórz zespół'),
-      ),
       child: navigationShell,
     );
   }

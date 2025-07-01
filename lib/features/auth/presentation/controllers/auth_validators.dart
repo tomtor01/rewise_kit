@@ -14,10 +14,6 @@ class AuthValidators {
     if (!RegExp(r'[0-9]').hasMatch(value)) {
       errors.add('Brak cyfry');
     }
-    // Updated regex to avoid Dart lint warning about unnecessary escape
-    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-      errors.add('Brak znaku specjalnego');
-    }
     if (value.length < 8) {
       errors.add('Hasło musi mieć co najmniej 8 znaków');
     }

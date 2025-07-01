@@ -21,6 +21,9 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
     final double titlePadding =
         windowSizeClass == WindowSizeClass.compact ? 0 : 64.0;
     return AppBar(
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       title: Padding(
         padding: EdgeInsets.only(left: titlePadding),
         child: const AppTitle(),
