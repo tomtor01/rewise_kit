@@ -9,11 +9,10 @@ part 'user_data_notifier.g.dart';
 
 @riverpod
 class UserDataNotifier extends _$UserDataNotifier {
-  late final GetUserDataUseCase _getUserData;
+  final GetUserDataUseCase _getUserData = sl<GetUserDataUseCase>();
 
   @override
   Future<UserData?> build() {
-    _getUserData = sl<GetUserDataUseCase>();
     final currentUser = ref.watch(currentUserProvider);
 
     if (currentUser == null) {

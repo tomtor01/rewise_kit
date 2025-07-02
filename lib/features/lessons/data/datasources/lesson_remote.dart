@@ -41,10 +41,11 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
     required String creatorId,
   }) async {
     try {
-      final snapshot = await _firestore
-          .collection('lessons')
-          .where('creatorId', isEqualTo: creatorId)
-          .get();
+      final snapshot =
+          await _firestore
+              .collection('lessons')
+              .where('creatorId', isEqualTo: creatorId)
+              .get();
 
       return snapshot.docs.map((doc) => LessonModel.fromSnapshot(doc)).toList();
     } catch (e) {
@@ -74,15 +75,16 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
       if (query.isEmpty) {
         return [];
       }
-      // Zapytanie do Firestore, które szuka lekcji, których tytuł
-      // zaczyna się od podanego ciągu znaków (query).
       // '\uf8ff' to bardzo wysoki znak w Unicode, który pozwala
       // zamknąć zakres wyszukiwania.
+      final normalizedQuery = LessonModel.normalizeText(query);
+
       final snapshot =
           await _firestore
               .collection('lessons')
-              .where('title', isGreaterThanOrEqualTo: query)
-              .where('title', isLessThanOrEqualTo: '$query\uf8ff')
+              .where('searchTitle', isGreaterThanOrEqualTo: normalizedQuery)
+              .where('searchTitle', isLessThanOrEqualTo: '$normalizedQuery\uf8ff')
+              .limit(10)
               .get();
 
       return snapshot.docs.map((doc) => LessonModel.fromSnapshot(doc)).toList();
@@ -92,17 +94,19 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
   }
 
   @override
-  Future<List<LessonModel>> getSavedLessons(
-      {required List<String> lessonIds}) async {
+  Future<List<LessonModel>> getSavedLessons({
+    required List<String> lessonIds,
+  }) async {
     try {
       // Jeśli lista ID jest pusta, nie ma sensu wykonywać zapytania
       if (lessonIds.isEmpty) {
         return [];
       }
-      final snapshot = await _firestore
-          .collection('lessons')
-          .where(FieldPath.documentId, whereIn: lessonIds)
-          .get();
+      final snapshot =
+          await _firestore
+              .collection('lessons')
+              .where(FieldPath.documentId, whereIn: lessonIds)
+              .get();
 
       return snapshot.docs.map((doc) => LessonModel.fromSnapshot(doc)).toList();
     } catch (e) {
@@ -111,14 +115,20 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
   }
 
   @override
-  Future<void> saveLesson({required String userId, required String lessonId}) async {
+  Future<void> saveLesson({
+    required String userId,
+    required String lessonId,
+  }) async {
     await _userDoc(userId).set({
       'savedLessonIds': FieldValue.arrayUnion([lessonId]),
     }, SetOptions(merge: true));
   }
 
   @override
-  Future<void> unsaveLesson({required String userId, required String lessonId}) async {
+  Future<void> unsaveLesson({
+    required String userId,
+    required String lessonId,
+  }) async {
     await _userDoc(userId).update({
       'savedLessonIds': FieldValue.arrayRemove([lessonId]),
     });

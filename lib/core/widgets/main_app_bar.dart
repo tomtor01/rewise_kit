@@ -9,11 +9,13 @@ import 'app_title.dart';
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   final WindowSizeClass windowSizeClass;
   final bool isGuest;
+  final List<Widget>? leadingActions;
 
   const MainAppBar({
     super.key,
     required this.windowSizeClass,
     this.isGuest = false,
+    this.leadingActions,
   });
 
   @override
@@ -29,6 +31,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: const AppTitle(),
       ),
       actions: [
+        if (leadingActions != null) ...leadingActions!,
         if (!isGuest)
           Consumer(
             builder: (context, ref, _) {

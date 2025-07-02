@@ -6,54 +6,60 @@ import 'package:rewise_kit/features/lessons/domain/entities/lesson.dart';
 import 'package:rewise_kit/features/lessons/presentation/app/notifiers/lesson_notifier.dart';
 import 'package:rewise_kit/features/lessons/presentation/app/providers/lesson_provider.dart';
 
-class HomePage extends ConsumerWidget {
+import '../widgets/home_page_header.dart';
+import '../widgets/lesson_search_bar.dart';
+
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final lessonsAsyncValue = ref.watch(filteredLessonsProvider);
-    final currentFilter = ref.watch(currentLessonFilterProvider);
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final createdLessonsAsyncValue = ref.watch(createdLessonsProvider);
+    final savedLessonsAsyncValue = ref.watch(savedLessonsProvider);
     final windowSizeClass = ResponsiveLayout.getWindowSizeClass(context);
 
     return Scaffold(
-      body: Column(
-        children: [
+      appBar: HomePageHeader(
+        windowSizeClass: windowSizeClass,
+        tabController: _tabController,
+        tabs: const [
+          Tab(text: 'Utworzone'),
+          Tab(text: 'Zapisane'),
+        ],
+        actions: const [
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  decoration: const InputDecoration(
-                    labelText: 'Szukaj lekcji...',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (query) {
-                    ref.read(lessonSearchQueryProvider.notifier).setQuery(query);
-                  },
-                ),
-                const SizedBox(height: 16),
-                SegmentedButton<LessonFilter>(
-                  segments: const <ButtonSegment<LessonFilter>>[
-                    ButtonSegment(value: LessonFilter.all, label: Text('Wszystkie')),
-                    ButtonSegment(value: LessonFilter.created, label: Text('Utworzone')),
-                    ButtonSegment(value: LessonFilter.saved, label: Text('Zapisane')),
-                  ],
-                  selected: {currentFilter},
-                  onSelectionChanged: (newSelection) {
-                    ref.read(currentLessonFilterProvider.notifier).setFilter(newSelection.first);
-                  },
-                ),
-              ],
-            ),
+            padding: EdgeInsets.only(right: 8.0),
+            child: LessonSearchBar(),
           ),
-          Expanded(
-            child: lessonsAsyncValue.when(
-              data: (lessons) => _buildBody(context, lessons, windowSizeClass),
-              error: (error, stack) => Center(child: Text('Błąd: $error')),
-              loading: () => const Center(child: CircularProgressIndicator()),
-            ),
-          ),
+        ],
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // Przekazuje dane o utworzonych lekcjach do pierwszej zakładki
+          _buildTabContent(createdLessonsAsyncValue, windowSizeClass),
+          // Przekazuje dane o zapisanych lekcjach do drugiej zakładki
+          _buildTabContent(savedLessonsAsyncValue, windowSizeClass),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -64,7 +70,22 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, List<Lesson> lessons, WindowSizeClass windowSizeClass) {
+  Widget _buildTabContent(
+      AsyncValue<List<Lesson>> lessonsAsyncValue,
+      WindowSizeClass windowSizeClass,
+      ) {
+    return lessonsAsyncValue.when(
+      data: (lessons) => _buildBody(context, lessons, windowSizeClass),
+      error: (error, stack) => Center(child: Text('Błąd: $error')),
+      loading: () => const Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildBody(
+      BuildContext context,
+      List<Lesson> lessons,
+      WindowSizeClass windowSizeClass,
+      ) {
     if (lessons.isEmpty) {
       return const Center(
         child: Text(
@@ -88,11 +109,15 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildGridLayout(List<Lesson> lessons, WindowSizeClass windowSizeClass) {
+  Widget _buildGridLayout(
+      List<Lesson> lessons,
+      WindowSizeClass windowSizeClass,
+      ) {
     return LayoutBuilder(
       builder: (context, constraints) {
         const double minTileWidth = 350.0;
-        final int crossAxisCount = (constraints.maxWidth / minTileWidth).floor();
+        final int crossAxisCount =
+        (constraints.maxWidth / minTileWidth).floor();
         return GridView.builder(
           padding: ResponsiveLayout.getMarginForWindowSize(windowSizeClass),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -126,7 +151,10 @@ class HomePage extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Stwórz nową lekcję', style: Theme.of(context).textTheme.headlineSmall),
+                  Text(
+                    'Stwórz nową lekcję',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
                   const SizedBox(height: 20),
                   Flexible(
                     child: SingleChildScrollView(
@@ -137,9 +165,13 @@ class HomePage extends ConsumerWidget {
                           children: <Widget>[
                             TextFormField(
                               controller: titleController,
-                              decoration: const InputDecoration(labelText: 'Nazwa lekcji'),
+                              decoration: const InputDecoration(
+                                labelText: 'Nazwa lekcji',
+                              ),
                               validator: (value) {
-                                if (value == null || value.isEmpty) return 'Proszę podać nazwę';
+                                if (value == null || value.isEmpty) {
+                                  return 'Proszę podać nazwę';
+                                }
                                 return null;
                               },
                             ),
@@ -172,7 +204,9 @@ class HomePage extends ConsumerWidget {
                         child: const Text('Stwórz'),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
-                            ref.read(lessonActionsProvider.notifier).createLesson(
+                            ref
+                                .read(lessonActionsProvider.notifier)
+                                .createLesson(
                               titleController.text.trim(),
                               descriptionController.text.trim(),
                             );
@@ -194,6 +228,7 @@ class HomePage extends ConsumerWidget {
 
 class _LessonCard extends StatelessWidget {
   final Lesson lesson;
+
   const _LessonCard({required this.lesson});
 
   @override

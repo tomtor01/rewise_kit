@@ -40,44 +40,6 @@ final createdLessonsProvider = AutoDisposeFutureProvider<List<Lesson>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CreatedLessonsRef = AutoDisposeFutureProviderRef<List<Lesson>>;
-String _$searchedLessonsHash() => r'05b73089885855c21d6a5863aa977a2486232092';
-
-/// See also [searchedLessons].
-@ProviderFor(searchedLessons)
-final searchedLessonsProvider =
-    AutoDisposeFutureProvider<List<Lesson>>.internal(
-      searchedLessons,
-      name: r'searchedLessonsProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$searchedLessonsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef SearchedLessonsRef = AutoDisposeFutureProviderRef<List<Lesson>>;
-String _$filteredLessonsHash() => r'ba5a0fbb94b1ffe1ca6abf9f89dc86574af46670';
-
-/// See also [filteredLessons].
-@ProviderFor(filteredLessons)
-final filteredLessonsProvider =
-    AutoDisposeFutureProvider<List<Lesson>>.internal(
-      filteredLessons,
-      name: r'filteredLessonsProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$filteredLessonsHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef FilteredLessonsRef = AutoDisposeFutureProviderRef<List<Lesson>>;
 String _$lessonDetailsHash() => r'05d8e8152320e61c4b9ebfc623859da568a16315';
 
 /// Copied from Dart SDK
@@ -220,40 +182,5 @@ class _LessonDetailsProviderElement
   String get lessonId => (origin as LessonDetailsProvider).lessonId;
 }
 
-String _$currentLessonFilterHash() =>
-    r'b65cf32162db34ca52a810b26133c6bba3822ed8';
-
-/// See also [CurrentLessonFilter].
-@ProviderFor(CurrentLessonFilter)
-final currentLessonFilterProvider =
-    AutoDisposeNotifierProvider<CurrentLessonFilter, LessonFilter>.internal(
-      CurrentLessonFilter.new,
-      name: r'currentLessonFilterProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$currentLessonFilterHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$CurrentLessonFilter = AutoDisposeNotifier<LessonFilter>;
-String _$lessonSearchQueryHash() => r'cfcd74b544964914dcf1a0aee606fabb5c9b31c6';
-
-/// See also [LessonSearchQuery].
-@ProviderFor(LessonSearchQuery)
-final lessonSearchQueryProvider =
-    AutoDisposeNotifierProvider<LessonSearchQuery, String>.internal(
-      LessonSearchQuery.new,
-      name: r'lessonSearchQueryProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$lessonSearchQueryHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$LessonSearchQuery = AutoDisposeNotifier<String>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
