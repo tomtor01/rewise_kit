@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/flashcard.dart';
 import '../models/flashcard_model.dart';
+import '../models/flashcard_set_model.dart';
 
 abstract class FlashcardRemoteDataSource {
   Future<void> createFlashcard({
-    required String lessonId,
     required String flashcardSetId,
     required String front,
     required String back,
@@ -16,7 +15,7 @@ abstract class FlashcardRemoteDataSource {
     required String description,
   });
 
-  Future<List<Flashcard>> getFlashcardsBySetId({
+  Future<List<FlashcardModel>> getFlashcardsBySetId({
     required String flashcardSetId,
   });
 
@@ -33,6 +32,10 @@ abstract class FlashcardRemoteDataSource {
   Future<void> updateLastReviewed({
     required String flashcardId,
   });
+
+  Future<List<FlashcardSetModel>> getFlashcardSets({
+    required String lessonId,
+  });
 }
 
 class FlashcardRemoteDataSourceImpl implements FlashcardRemoteDataSource {
@@ -42,26 +45,37 @@ class FlashcardRemoteDataSourceImpl implements FlashcardRemoteDataSource {
 
   @override
   Future<void> createFlashcard({
-    required String lessonId,
     required String flashcardSetId,
     required String front,
     required String back,
   }) async {
     try {
-      await _firestore.collection('flashcards').add({
-        'lessonId': lessonId,
+      // Użyj batch do atomowej operacji
+      final batch = _firestore.batch();
+
+      // Dodaj fiszkę
+      final flashcardRef = _firestore.collection('flashcards').doc();
+      batch.set(flashcardRef, {
         'flashcardSetId': flashcardSetId,
         'front': front,
         'back': back,
         'createdAt': Timestamp.now(),
       });
+
+      // Zwiększa licznik fiszek w zestawie
+      final setRef = _firestore.collection('flashcardSets').doc(flashcardSetId);
+      batch.update(setRef, {
+        'flashcardCount': FieldValue.increment(1),
+      });
+
+      await batch.commit();
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
   @override
-  Future<List<Flashcard>> getFlashcardsBySetId({
+  Future<List<FlashcardModel>> getFlashcardsBySetId({
     required String flashcardSetId,
   }) async {
     try {
@@ -113,7 +127,27 @@ class FlashcardRemoteDataSourceImpl implements FlashcardRemoteDataSource {
   @override
   Future<void> deleteFlashcard({required String flashcardId}) async {
     try {
-      await _firestore.collection('flashcards').doc(flashcardId).delete();
+      // Najpierw pobierz fiszkę żeby znać flashcardSetId
+      final flashcardDoc = await _firestore.collection('flashcards').doc(flashcardId).get();
+      if (!flashcardDoc.exists) {
+        throw Exception('Fiszka nie istnieje');
+      }
+
+      final flashcardSetId = flashcardDoc.data()!['flashcardSetId'] as String;
+
+      // Użyj batch do atomowej operacji
+      final batch = _firestore.batch();
+
+      // Usuń fiszkę
+      batch.delete(_firestore.collection('flashcards').doc(flashcardId));
+
+      // Zmniejsz licznik
+      final setRef = _firestore.collection('flashcardSets').doc(flashcardSetId);
+      batch.update(setRef, {
+        'flashcardCount': FieldValue.increment(-1),
+      });
+
+      await batch.commit();
     } catch (e) {
       throw Exception('Błąd podczas usuwania fiszki: $e');
     }
@@ -128,5 +162,20 @@ class FlashcardRemoteDataSourceImpl implements FlashcardRemoteDataSource {
     } catch (e) {
       throw Exception(e.toString());
     }
+  }
+
+  @override
+  Future<List<FlashcardSetModel>> getFlashcardSets({
+    required String lessonId,
+  }) async {
+    final snapshot = await _firestore
+        .collection('flashcardSets')
+        .where('lessonId', isEqualTo: lessonId)
+        .orderBy('createdAt', descending: false)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => FlashcardSetModel.fromMap(doc.data(), doc.id))
+        .toList();
   }
 }

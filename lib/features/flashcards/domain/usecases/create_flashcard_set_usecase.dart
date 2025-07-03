@@ -21,12 +21,12 @@ class CreateFlashcardSetUseCase
 class CreateFlashcardSetParams extends Equatable {
   final String lessonId;
   final String title;
-  final String description;
+  final String? description;
 
   const CreateFlashcardSetParams({
     required this.lessonId,
     required this.title,
-    required this.description,
+    this.description,
   });
 
   @override

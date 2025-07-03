@@ -21,6 +21,7 @@ import '../../features/flashcards/domain/repositories/flashcard_repository.dart'
 import '../../features/flashcards/domain/usecases/create_flashcard_set_usecase.dart';
 import '../../features/flashcards/domain/usecases/create_flashcard_usecase.dart';
 import '../../features/flashcards/domain/usecases/delete_flashcard_usecase.dart';
+import '../../features/flashcards/domain/usecases/get_flashcard_sets_usecase.dart';
 import '../../features/flashcards/domain/usecases/get_flashcards_by_set_id_usecase.dart';
 import '../../features/flashcards/domain/usecases/update_flashcard_usecase.dart';
 import '../../features/lessons/data/datasources/lesson_remote.dart';

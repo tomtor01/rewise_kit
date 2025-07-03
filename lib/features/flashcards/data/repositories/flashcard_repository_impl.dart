@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/common/error/failures.dart';
 import '../../../../core/common/utils/typedefs.dart';
 import '../../domain/entities/flashcard.dart';
+import '../../domain/entities/flashcard_set.dart';
 import '../../domain/repositories/flashcard_repository.dart';
 import '../datasources/flashcard_remote.dart';
 
@@ -14,7 +15,6 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
 
   @override
   FutureResult<void> createFlashcard({
-    required String lessonId,
     required String flashcardSetId,
     required String front,
     required String back,
@@ -28,7 +28,6 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
       }
 
       final result = await remoteDataSource.createFlashcard(
-        lessonId: lessonId,
         flashcardSetId: flashcardSetId,
         front: front,
         back: back,
@@ -43,7 +42,7 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
   FutureResult<void> createFlashcardSet({
     required String lessonId,
     required String title,
-    required String description,
+    String? description,
   }) async {
     try {
       final user = auth.currentUser;
@@ -52,6 +51,7 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
           ServerFailure(message: 'User not logged in', statusCode: 401),
         );
       }
+      description ??= '';
 
       final result = await remoteDataSource.createFlashcardSet(
         lessonId: lessonId,
@@ -72,7 +72,8 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
       final result = await remoteDataSource.getFlashcardsBySetId(
         flashcardSetId: flashcardSetId,
       );
-      return Right(result);
+      final flashcards = result.map((model) => model as Flashcard).toList();
+      return Right(flashcards);
     } catch (e) {
       return Left(ServerFailure(message: e.toString(), statusCode: 500));
     }
@@ -111,10 +112,23 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
   @override
   FutureResult<void> updateLastReviewed({required String flashcardId}) async {
     try {
-      await remoteDataSource.updateLastReviewed(
-        flashcardId: flashcardId,
-      );
+      await remoteDataSource.updateLastReviewed(flashcardId: flashcardId);
       return Right(null);
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString(), statusCode: 500));
+    }
+  }
+
+  @override
+  FutureResult<List<FlashcardSet>> getFlashcardSets({
+    required String lessonId,
+  }) async {
+    try {
+      final result = await remoteDataSource.getFlashcardSets(
+        lessonId: lessonId,
+      );
+      final flashcardSets = result.map((model) => model as FlashcardSet).toList();
+      return Right(flashcardSets);
     } catch (e) {
       return Left(ServerFailure(message: e.toString(), statusCode: 500));
     }

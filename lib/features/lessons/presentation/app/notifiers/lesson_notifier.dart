@@ -48,8 +48,6 @@ class LessonActions extends _$LessonActions {
     final result = await _deleteLesson(DeleteLessonParams(lessonId: lessonId));
     result.fold(
           (failure) {
-        // Tutaj można obsłużyć błąd, np. poprzez wystawienie stanu błędu
-        // lub pokazanie SnackBar'a z błędem w UI.
       },
           (_) {
         // Unieważnienie providerów, aby odświeżyć listę lekcji na stronie głównej

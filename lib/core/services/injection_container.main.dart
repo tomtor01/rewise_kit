@@ -19,6 +19,10 @@ Future<void> cacheInit() async {
   );
 }
 
+Future<void> initServices() async {
+
+}
+
 Future<void> initData() async {
   sl
     ..registerLazySingleton(() => FirebaseAuth.instance)
@@ -93,5 +97,8 @@ Future<void> initUseCases() async {
     )
     ..registerLazySingleton(
       () => CreateFlashcardSetUseCase(sl<FlashcardRepository>()),
+    )
+      ..registerLazySingleton(
+      () => GetFlashcardSetsUseCase(sl<FlashcardRepository>()),
     );
 }

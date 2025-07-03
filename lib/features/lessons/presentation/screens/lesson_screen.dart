@@ -116,49 +116,59 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                                   ).colorScheme.onSurfaceVariant
                                   : Theme.of(context).colorScheme.onPrimary,
                         ),
-                        onPressed: _isProcessing
-                            ? null
-                            : () async {
-                          final lessonActions =
-                          ref.read(lessonActionsProvider.notifier);
+                        onPressed:
+                            _isProcessing
+                                ? null
+                                : () async {
+                                  final lessonActions = ref.read(
+                                    lessonActionsProvider.notifier,
+                                  );
 
-                          if (isSaved) {
-                            final confirm = await showDialog<bool>(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title:
-                                const Text('Przestać obserwować?'),
-                                content: const Text(
-                                  'Czy na pewno chcesz usunąć tę lekcję z obserwowanych?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(false),
-                                    child: const Text('Anuluj'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(true),
-                                    child: const Text('Potwierdź'),
-                                  ),
-                                ],
-                              ),
-                            );
+                                  if (isSaved) {
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder:
+                                          (context) => AlertDialog(
+                                            title: const Text(
+                                              'Przestać obserwować?',
+                                            ),
+                                            content: const Text(
+                                              'Czy na pewno chcesz usunąć tę lekcję z obserwowanych?',
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed:
+                                                    () => Navigator.of(
+                                                      context,
+                                                    ).pop(false),
+                                                child: const Text('Anuluj'),
+                                              ),
+                                              TextButton(
+                                                onPressed:
+                                                    () => Navigator.of(
+                                                      context,
+                                                    ).pop(true),
+                                                child: const Text('Potwierdź'),
+                                              ),
+                                            ],
+                                          ),
+                                    );
 
-                            if (confirm == true) {
-                              setState(() => _isProcessing = true);
-                              await lessonActions.unsaveLesson(lesson.id);
-                            }
-                          } else {
-                            setState(() => _isProcessing = true);
-                            await lessonActions.saveLesson(lesson.id);
-                          }
+                                    if (confirm == true) {
+                                      setState(() => _isProcessing = true);
+                                      await lessonActions.unsaveLesson(
+                                        lesson.id,
+                                      );
+                                    }
+                                  } else {
+                                    setState(() => _isProcessing = true);
+                                    await lessonActions.saveLesson(lesson.id);
+                                  }
 
-                          if (mounted) {
-                            setState(() => _isProcessing = false);
-                          }
-                        },
+                                  if (mounted) {
+                                    setState(() => _isProcessing = false);
+                                  }
+                                },
                         child:
                             _isProcessing
                                 ? const SizedBox(
@@ -186,7 +196,36 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                       lesson.description,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    // Tutaj w przyszłości będzie lista fiszek
+                    const SizedBox(height: 24),
+                    // Sekcja zestawów fiszek
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.quiz_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Zestawy fiszek',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Tutaj będzie lista zestawów fiszek
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.quiz),
+                        title: const Text('Przejdź do zestawów fiszek'),
+                        subtitle: const Text('Przeglądaj i ucz się z fiszkami'),
+                        trailing: const Icon(Icons.arrow_forward_ios),
+                        onTap: () {
+                          context.push(
+                            '/lesson/${widget.lessonId}/flashcards?isCreator=$isCreator',
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -196,6 +235,26 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error:
             (error, stackTrace) => Center(child: Text('Wystąpił błąd: $error')),
+      ),
+      floatingActionButton: lessonDetailsAsync.when(
+        data: (lesson) {
+          final currentUser = ref.watch(currentUserProvider);
+          final isCreator = currentUser?.uid == lesson.creatorId;
+
+          return isCreator
+              ? FloatingActionButton(
+                onPressed: () {
+                  context.push(
+                    '/lesson/${widget.lessonId}/flashcards?isCreator=true',
+                  );
+                },
+                tooltip: 'Zarządzaj zestawami fiszek',
+                child: const Icon(Icons.quiz),
+              )
+              : null;
+        },
+        loading: () => null,
+        error: (_, __) => null,
       ),
     );
   }

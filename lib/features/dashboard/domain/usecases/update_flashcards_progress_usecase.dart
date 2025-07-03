@@ -4,24 +4,24 @@ import '../../../../core/common/utils/typedefs.dart';
 import '../repositories/dashboard_repository.dart';
 
 class UpdateFlashcardsProgressUseCase
-    extends UseCaseWithParams<void, MarkFlashcardParams> {
+    extends UseCaseWithParams<void, UpdateFlashcardProgressParams> {
   final DashboardRepository _repository;
 
   UpdateFlashcardsProgressUseCase(this._repository);
 
   @override
-  FutureResult<void> call(MarkFlashcardParams params) =>
+  FutureResult<void> call(UpdateFlashcardProgressParams params) =>
       _repository.markFlashcard(
         flashcardId: params.flashcardId,
         isLearned: params.isLearned,
       );
 }
 
-class MarkFlashcardParams extends Equatable {
+class UpdateFlashcardProgressParams extends Equatable {
   final String flashcardId;
   final bool isLearned;
 
-  const MarkFlashcardParams({
+  const UpdateFlashcardProgressParams({
     required this.flashcardId,
     required this.isLearned,
   });

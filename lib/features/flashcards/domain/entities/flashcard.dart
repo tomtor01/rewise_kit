@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 
 class Flashcard extends Equatable {
   final String id;
-  final String lessonId;
   final String flashcardSetId;
   final String front;
   final String back;
@@ -11,7 +10,6 @@ class Flashcard extends Equatable {
 
   const Flashcard({
     required this.id,
-    required this.lessonId,
     required this.flashcardSetId,
     required this.front,
     required this.back,
@@ -22,7 +20,6 @@ class Flashcard extends Equatable {
   @override
   List<Object?> get props => [
     id,
-    lessonId,
     flashcardSetId,
     front,
     back,
