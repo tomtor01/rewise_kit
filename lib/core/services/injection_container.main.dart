@@ -10,12 +10,10 @@ Future<void> init() async {
 
 Future<void> cacheInit() async {
   final sharedPrefs = await SharedPreferences.getInstance();
-  const secureStorage = FlutterSecureStorage();
 
   sl.registerLazySingleton(() => sharedPrefs);
-  sl.registerLazySingleton(() => secureStorage);
   sl.registerLazySingleton<CacheHelper>(
-    () => CacheHelper(sl<SharedPreferences>(), sl<FlutterSecureStorage>()),
+    () => CacheHelper(sl<SharedPreferences>()),
   );
 }
 
