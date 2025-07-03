@@ -13,6 +13,7 @@ class CreateFlashcardUseCase
   FutureResult<void> call(CreateFlashcardParams params) =>
       _repository.createFlashcard(
         lessonId: params.lessonId,
+        flashcardSetId: params.flashcardSetId,
         front: params.front,
         back: params.back,
       );
@@ -20,15 +21,17 @@ class CreateFlashcardUseCase
 
 class CreateFlashcardParams extends Equatable {
   final String lessonId;
+  final String flashcardSetId;
   final String front;
   final String back;
 
   const CreateFlashcardParams({
     required this.lessonId,
+    required this.flashcardSetId,
     required this.front,
     required this.back,
   });
 
   @override
-  List<Object?> get props => [lessonId, front, back];
+  List<Object?> get props => [lessonId, flashcardSetId, front, back];
 }

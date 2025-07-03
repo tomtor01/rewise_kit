@@ -1,5 +1,4 @@
 import 'package:rewise_kit/features/lessons/domain/entities/lesson.dart';
-
 import '../../../flashcards/domain/entities/flashcard.dart';
 
 class LessonDetails extends Lesson {
@@ -14,5 +13,16 @@ class LessonDetails extends Lesson {
     required this.content,
   });
 
-// Możesz dodać metodę copyWith, jeśli będzie potrzebna
+  LessonDetails copyWith({
+    List<Flashcard>? content,
+  }) {
+    return LessonDetails(
+      id: id,
+      title: title,
+      description: description,
+      creatorId: creatorId,
+      createdAt: createdAt,
+      content: content ?? this.content,
+    );
+  }
 }

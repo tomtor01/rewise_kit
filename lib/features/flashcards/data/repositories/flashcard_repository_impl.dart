@@ -5,7 +5,6 @@ import '../../../../core/common/utils/typedefs.dart';
 import '../../domain/entities/flashcard.dart';
 import '../../domain/repositories/flashcard_repository.dart';
 import '../datasources/flashcard_remote.dart';
-import '../models/flashcard_model.dart';
 
 class FlashcardRepositoryImpl implements FlashcardRepository {
   final FlashcardRemoteDataSource remoteDataSource;
@@ -16,6 +15,7 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
   @override
   FutureResult<void> createFlashcard({
     required String lessonId,
+    required String flashcardSetId,
     required String front,
     required String back,
   }) async {
@@ -27,15 +27,12 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
         );
       }
 
-      final flashcardModel = FlashcardModel(
-        id: '',
+      final result = await remoteDataSource.createFlashcard(
         lessonId: lessonId,
+        flashcardSetId: flashcardSetId,
         front: front,
         back: back,
-        createdAt: DateTime.now(),
       );
-
-      final result = await remoteDataSource.createFlashcard(flashcardModel);
       return Right(result);
     } catch (e) {
       return Left(ServerFailure(message: e.toString(), statusCode: 500));
@@ -43,12 +40,37 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
   }
 
   @override
-  FutureResult<List<Flashcard>> getFlashcardsByLessonId({
+  FutureResult<void> createFlashcardSet({
     required String lessonId,
+    required String title,
+    required String description,
   }) async {
     try {
-      final result = await remoteDataSource.getFlashcardsByLessonId(
+      final user = auth.currentUser;
+      if (user == null) {
+        return const Left(
+          ServerFailure(message: 'User not logged in', statusCode: 401),
+        );
+      }
+
+      final result = await remoteDataSource.createFlashcardSet(
         lessonId: lessonId,
+        title: title,
+        description: description,
+      );
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString(), statusCode: 500));
+    }
+  }
+
+  @override
+  FutureResult<List<Flashcard>> getFlashcardsBySetId({
+    required String flashcardSetId,
+  }) async {
+    try {
+      final result = await remoteDataSource.getFlashcardsBySetId(
+        flashcardSetId: flashcardSetId,
       );
       return Right(result);
     } catch (e) {
@@ -63,15 +85,11 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
     required String back,
   }) async {
     try {
-      final flashcardModel = FlashcardModel(
-        id: flashcardId,
-        lessonId: '',
+      final result = await remoteDataSource.updateFlashcard(
+        flashcardId: flashcardId,
         front: front,
         back: back,
-        createdAt: DateTime.now(),
       );
-
-      final result = await remoteDataSource.updateFlashcard(flashcardModel);
       return Right(result);
     } catch (e) {
       return Left(ServerFailure(message: e.toString(), statusCode: 500));
@@ -91,24 +109,12 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
   }
 
   @override
-  FutureResult<void> markAsLearned({required String flashcardId}) async {
+  FutureResult<void> updateLastReviewed({required String flashcardId}) async {
     try {
-      final result = await remoteDataSource.markAsLearned(
+      await remoteDataSource.updateLastReviewed(
         flashcardId: flashcardId,
       );
-      return Right(result);
-    } catch (e) {
-      return Left(ServerFailure(message: e.toString(), statusCode: 500));
-    }
-  }
-
-  @override
-  FutureResult<void> markAsNotLearned({required String flashcardId}) async {
-    try {
-      final result = await remoteDataSource.markAsNotLearned(
-        flashcardId: flashcardId,
-      );
-      return Right(result);
+      return Right(null);
     } catch (e) {
       return Left(ServerFailure(message: e.toString(), statusCode: 500));
     }

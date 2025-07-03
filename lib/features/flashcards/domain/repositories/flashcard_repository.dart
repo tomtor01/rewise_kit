@@ -1,15 +1,22 @@
-import 'package:rewise_kit/core/common/utils/typedefs.dart';
+import '../../../../core/common/utils/typedefs.dart';
 import '../entities/flashcard.dart';
 
 abstract class FlashcardRepository {
   FutureResult<void> createFlashcard({
     required String lessonId,
+    required String flashcardSetId,
     required String front,
     required String back,
   });
 
-  FutureResult<List<Flashcard>> getFlashcardsByLessonId({
+  FutureResult<void> createFlashcardSet({
     required String lessonId,
+    required String title,
+    required String description,
+  });
+
+  FutureResult<List<Flashcard>> getFlashcardsBySetId({
+    required String flashcardSetId,
   });
 
   FutureResult<void> updateFlashcard({
@@ -18,9 +25,11 @@ abstract class FlashcardRepository {
     required String back,
   });
 
-  FutureResult<void> deleteFlashcard({required String flashcardId});
+  FutureResult<void> deleteFlashcard({
+    required String flashcardId,
+  });
 
-  FutureResult<void> markAsLearned({required String flashcardId});
-
-  FutureResult<void> markAsNotLearned({required String flashcardId});
+  FutureResult<void> updateLastReviewed({
+    required String flashcardId,
+  });
 }

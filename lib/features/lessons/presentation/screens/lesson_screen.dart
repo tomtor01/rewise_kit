@@ -99,7 +99,6 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                           ],
                     )
                   else
-                    // Istniejący przycisk "Obserwuj" dla innych użytkowników
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: ElevatedButton(

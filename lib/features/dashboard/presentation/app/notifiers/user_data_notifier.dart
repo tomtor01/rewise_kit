@@ -3,7 +3,7 @@ import 'package:rewise_kit/core/common/providers/current_user_provider.dart';
 import 'package:rewise_kit/core/services/injection_container.dart';
 
 import '../../../domain/entities/user_data.dart';
-import '../../../domain/usecases/get_user_data.dart';
+import '../../../domain/usecases/get_user_data_usecase.dart';
 
 part 'user_data_notifier.g.dart';
 

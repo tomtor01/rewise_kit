@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 class Flashcard extends Equatable {
   final String id;
   final String lessonId;
+  final String flashcardSetId;
   final String front;
   final String back;
   final DateTime createdAt;
@@ -11,6 +12,7 @@ class Flashcard extends Equatable {
   const Flashcard({
     required this.id,
     required this.lessonId,
+    required this.flashcardSetId,
     required this.front,
     required this.back,
     required this.createdAt,
@@ -21,6 +23,7 @@ class Flashcard extends Equatable {
   List<Object?> get props => [
     id,
     lessonId,
+    flashcardSetId,
     front,
     back,
     createdAt,

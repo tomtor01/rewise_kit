@@ -3,6 +3,12 @@ import '../../../dashboard/data/models/user_data_model.dart';
 
 abstract class DashboardRemoteDataSource {
   Future<UserDataModel> getUserData(String userId);
+
+  Future<void> markFlashcard({
+    required String userId,
+    required String flashcardId,
+    required bool isLearned,
+  });
 }
 
 class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
@@ -17,6 +23,22 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
       return UserDataModel.fromMap(doc.data()!);
     } else {
       return const UserDataModel.empty();
+    }
+  }
+
+  @override
+  Future<void> markFlashcard({
+    required String userId,
+    required String flashcardId,
+    required bool isLearned,
+  }) async {
+    try {
+
+      await _firestore.collection('users').doc(userId).update({
+        'flashcardProgress.$flashcardId': isLearned,
+      });
+    } catch (e) {
+      throw Exception('Błąd podczas oznaczania fiszki: $e');
     }
   }
 }
