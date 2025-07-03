@@ -17,6 +17,8 @@ abstract class LessonRemoteDataSource {
   Future<void> unsaveLesson({required String userId, required String lessonId});
 
   Future<List<LessonModel>> getSavedLessons({required List<String> lessonIds});
+
+  Future<void> deleteLesson({required String lessonId});
 }
 
 class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
@@ -132,5 +134,14 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
     await _userDoc(userId).update({
       'savedLessonIds': FieldValue.arrayRemove([lessonId]),
     });
+  }
+
+  @override
+  Future<void> deleteLesson({required String lessonId}) async {
+    try {
+      await _firestore.collection('lessons').doc(lessonId).delete();
+    } catch (e) {
+      throw Exception('Błąd podczas usuwania lekcji: $e');
+    }
   }
 }

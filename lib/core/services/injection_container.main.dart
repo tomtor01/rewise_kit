@@ -38,11 +38,20 @@ Future<void> initData() async {
         sl<FirebaseAuth>(),
       ),
     )
-      ..registerLazySingleton<DashboardRemoteDataSource>(
+    ..registerLazySingleton<DashboardRemoteDataSource>(
       () => DashboardRemoteDataSourceImpl(sl<FirebaseFirestore>()),
     )
     ..registerLazySingleton<DashboardRepository>(
       () => DashboardRepositoryImpl(sl<DashboardRemoteDataSource>()),
+    )
+    ..registerLazySingleton<FlashcardRemoteDataSource>(
+      () => FlashcardRemoteDataSourceImpl(sl<FirebaseFirestore>()),
+    )
+    ..registerLazySingleton<FlashcardRepository>(
+      () => FlashcardRepositoryImpl(
+        sl<FlashcardRemoteDataSource>(),
+        sl<FirebaseAuth>(),
+      ),
     );
 }
 
@@ -60,5 +69,26 @@ Future<void> initUseCases() async {
     ..registerLazySingleton(() => UnsaveLessonUseCase(sl<LessonRepository>()))
     ..registerLazySingleton(() => SearchLessonsUseCase(sl<LessonRepository>()))
     ..registerLazySingleton(() => GetLessonByIdUseCase(sl<LessonRepository>()))
-    ..registerLazySingleton(() => GetSavedLessonsUseCase(sl<LessonRepository>()));
+    ..registerLazySingleton(
+      () => GetSavedLessonsUseCase(sl<LessonRepository>()),
+    )
+    ..registerLazySingleton(() => DeleteLessonUseCase(sl<LessonRepository>()))
+    ..registerLazySingleton(
+      () => CreateFlashcardUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => GetFlashcardsByLessonIdUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => UpdateFlashcardUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => DeleteFlashcardUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => MarkAsLearnedUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => MarkAsNotLearnedUseCase(sl<FlashcardRepository>()),
+    );
 }

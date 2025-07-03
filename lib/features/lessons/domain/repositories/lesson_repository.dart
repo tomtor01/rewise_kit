@@ -19,4 +19,6 @@ abstract class LessonRepository {
   FutureResult<void> unsaveLesson({required String lessonId});
 
   FutureResult<List<Lesson>> getSavedLessons({required List<String> lessonIds});
+
+  FutureResult<void> deleteLesson({required String lessonId});
 }

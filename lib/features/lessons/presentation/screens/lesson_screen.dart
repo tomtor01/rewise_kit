@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rewise_kit/core/common/providers/current_user_provider.dart';
 import 'package:rewise_kit/features/dashboard/presentation/app/notifiers/user_data_notifier.dart';
 import 'package:rewise_kit/features/lessons/presentation/app/notifiers/lesson_notifier.dart';
@@ -19,7 +20,9 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final lessonDetailsAsync = ref.watch(lessonDetailsProvider(widget.lessonId));
+    final lessonDetailsAsync = ref.watch(
+      lessonDetailsProvider(widget.lessonId),
+    );
     final userDataAsync = ref.watch(userDataNotifierProvider);
     final currentUser = ref.watch(currentUserProvider);
 
@@ -36,20 +39,83 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                 title: Text(lesson.title),
                 pinned: true,
                 actions: [
-                  // Jeśli użytkownik nie jest twórcą, pokaż przycisk
-                  if (!isCreator)
+                  if (isCreator)
+                    PopupMenuButton<String>(
+                      onSelected: (value) async {
+                        if (value == 'delete') {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: const Text('Usunąć lekcję?'),
+                                  content: const Text(
+                                    'Tej operacji nie można cofnąć. Czy na pewno chcesz trwale usunąć tę lekcję?',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () =>
+                                              Navigator.of(context).pop(false),
+                                      child: const Text('Anuluj'),
+                                    ),
+                                    FilledButton(
+                                      onPressed:
+                                          () => Navigator.of(context).pop(true),
+                                      child: const Text('Usuń'),
+                                    ),
+                                  ],
+                                ),
+                          );
+
+                          if (confirm == true && mounted) {
+                            await ref
+                                .read(lessonActionsProvider.notifier)
+                                .deleteLesson(widget.lessonId);
+
+                            if (mounted) {
+                              ScaffoldMessenger.of(context)
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Usunięto lekcję "${lesson.title}"',
+                                    ),
+                                  ),
+                                );
+                              context.pop();
+                            }
+                          }
+                        }
+                      },
+                      itemBuilder:
+                          (BuildContext context) => <PopupMenuEntry<String>>[
+                            const PopupMenuItem<String>(
+                              value: 'delete',
+                              child: ListTile(
+                                leading: Icon(Icons.delete_outline),
+                                title: Text('Usuń lekcję'),
+                              ),
+                            ),
+                          ],
+                    )
+                  else
+                    // Istniejący przycisk "Obserwuj" dla innych użytkowników
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isSaved
-                              ? Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest
-                              : Theme.of(context).colorScheme.primary,
-                          foregroundColor: isSaved
-                              ? Theme.of(context).colorScheme.onSurfaceVariant
-                              : Theme.of(context).colorScheme.onPrimary,
+                          backgroundColor:
+                              isSaved
+                                  ? Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest
+                                  : Theme.of(context).colorScheme.primary,
+                          foregroundColor:
+                              isSaved
+                                  ? Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant
+                                  : Theme.of(context).colorScheme.onPrimary,
                         ),
                         onPressed: _isProcessing
                             ? null
@@ -94,13 +160,16 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                             setState(() => _isProcessing = false);
                           }
                         },
-                        child: _isProcessing
-                            ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                            : Text(isSaved ? 'Obserwujesz' : 'Obserwuj'),
+                        child:
+                            _isProcessing
+                                ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                : Text(isSaved ? 'Obserwujesz' : 'Obserwuj'),
                       ),
                     ),
                 ],
@@ -126,8 +195,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) =>
-            Center(child: Text('Wystąpił błąd: $error')),
+        error:
+            (error, stackTrace) => Center(child: Text('Wystąpił błąd: $error')),
       ),
     );
   }

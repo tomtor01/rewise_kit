@@ -168,6 +168,7 @@ class _HomePageState extends ConsumerState<HomePage>
                               decoration: const InputDecoration(
                                 labelText: 'Nazwa lekcji',
                               ),
+                              maxLength: 30,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Proszę podać nazwę';
@@ -184,6 +185,7 @@ class _HomePageState extends ConsumerState<HomePage>
                               ),
                               keyboardType: TextInputType.multiline,
                               maxLines: null,
+                              maxLength: 100,
                               minLines: 3,
                             ),
                           ],

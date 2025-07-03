@@ -124,4 +124,14 @@ class LessonRepositoryImpl implements LessonRepository {
       return Left(ServerFailure(message: e.toString(), statusCode: 500));
     }
   }
+
+  @override
+  FutureResult<void> deleteLesson({required String lessonId}) async {
+    try {
+      final result = await remoteDataSource.deleteLesson(lessonId: lessonId);
+      return Right(result);
+    } on Exception catch (e) {
+      return Left(ServerFailure(message: e.toString(), statusCode: 500));
+    }
+  }
 }
