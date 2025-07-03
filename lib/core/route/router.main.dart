@@ -95,8 +95,16 @@ final router = GoRouter(
       path: '/flashcard-set/:setId/manage',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) {
-        final setId = state.pathParameters['setId']!;
-        return CreateFlashcardScreen(flashcardSetId: setId);
+        final setId = state.pathParameters['setId'];
+        print('SetId: $setId'); // Debug
+
+        if (setId == null) {
+          return const Scaffold(
+            body: Center(child: Text('Brak ID zestawu')),
+          );
+        }
+
+        return ManageFlashcardScreen(flashcardSetId: setId);
       },
     ),
     GoRoute(

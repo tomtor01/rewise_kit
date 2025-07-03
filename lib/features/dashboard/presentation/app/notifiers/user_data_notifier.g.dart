@@ -6,7 +6,26 @@ part of 'user_data_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userDataNotifierHash() => r'c3cf0453cc5330fd95ab65ac8292f6b5801e882a';
+String _$userProgressStatsHash() => r'0bf7e0a781b4e96c7ae0eb4506eca49a810d6537';
+
+/// See also [userProgressStats].
+@ProviderFor(userProgressStats)
+final userProgressStatsProvider =
+    AutoDisposeFutureProvider<UserProgressStats>.internal(
+      userProgressStats,
+      name: r'userProgressStatsProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$userProgressStatsHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef UserProgressStatsRef = AutoDisposeFutureProviderRef<UserProgressStats>;
+String _$userDataNotifierHash() => r'63c012085eaf0dca8f1a8a4129e78ab72436ba57';
 
 /// See also [UserDataNotifier].
 @ProviderFor(UserDataNotifier)

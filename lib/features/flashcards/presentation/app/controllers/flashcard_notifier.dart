@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rewise_kit/core/services/injection_container.dart';
+import '../../../../../core/common/providers/current_user_provider.dart';
+import '../../../../dashboard/presentation/app/notifiers/user_data_notifier.dart';
 import '../../../domain/entities/flashcard.dart';
 import '../../../domain/entities/flashcard_set.dart';
 import '../../../domain/usecases/create_flashcard_set_usecase.dart';
@@ -166,23 +168,42 @@ class FlashcardStudy extends _$FlashcardStudy {
   }
 
   void markFlashcard(bool isCorrect) {
-    // Dodaj odpowiedź tylko jeśli jeszcze nie była zapisana dla tej fiszki
+    // Dodaje odpowiedź tylko jeśli jeszcze nie była zapisana dla tej fiszki
     final updatedAnswers = List<bool>.from(state.answeredCorrectly);
 
-    // Jeśli to nowa odpowiedź, dodaj ją
+    // Jeśli to nowa odpowiedź, dodaje ją
     if (updatedAnswers.length <= state.currentIndex) {
       updatedAnswers.add(isCorrect);
     } else {
-      // Jeśli już była odpowiedź, zaktualizuj ją
+      // Jeśli już była odpowiedź, zaktualizuje ją
       updatedAnswers[state.currentIndex] = isCorrect;
     }
 
     state = state.copyWith(answeredCorrectly: updatedAnswers);
 
+    // Zapisuje postęp fiszki do Firestore
+    _saveFlashcardProgress(isCorrect);
+
     if (hasNext) {
       nextFlashcard();
     } else {
       state = state.copyWith(isSessionComplete: true);
+    }
+  }
+
+  Future<void> _saveFlashcardProgress(bool isLearned) async {
+    try {
+      final currentUser = ref.read(currentUserProvider);
+      final currentFlashcard = this.currentFlashcard;
+
+      if (currentUser != null && currentFlashcard != null) {
+        await ref.read(userDataNotifierProvider.notifier).markFlashcard(
+          currentFlashcard.id,
+          isLearned,
+        );
+      }
+    } catch (e) {
+      print('Błąd podczas zapisywania postępu: $e');
     }
   }
 

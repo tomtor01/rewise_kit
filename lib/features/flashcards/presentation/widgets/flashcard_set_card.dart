@@ -53,7 +53,7 @@ class FlashcardSetCard extends StatelessWidget {
             ],
             const SizedBox(height: 4),
             Text(
-              '${flashcardSet.flashcardCount} fiszek',
+              'Wszystkich fiszek: ${flashcardSet.flashcardCount}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w500,

@@ -21,6 +21,7 @@ class _FlashcardCardState extends State<FlashcardCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  bool _showBack = false;
 
   @override
   void initState() {
@@ -32,15 +33,38 @@ class _FlashcardCardState extends State<FlashcardCard>
     _animation = Tween(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
+
+    // Inicjalizuj stan na podstawie isRevealed
+    _showBack = widget.isRevealed;
+    if (widget.isRevealed) {
+      _controller.value = 1.0;
+    }
   }
 
   @override
   void didUpdateWidget(FlashcardCard oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    // Jeśli zmienił się flashcard, zresetuj animację
+    if (oldWidget.flashcard != widget.flashcard) {
+      _controller.reset();
+      _showBack = false;
+    }
+
+    // Jeśli zmienił się stan revealed
     if (widget.isRevealed != oldWidget.isRevealed) {
       if (widget.isRevealed) {
-        _controller.forward();
+        _controller.forward().then((_) {
+          if (mounted) {
+            setState(() {
+              _showBack = true;
+            });
+          }
+        });
       } else {
+        setState(() {
+          _showBack = false;
+        });
         _controller.reverse();
       }
     }
@@ -69,7 +93,7 @@ class _FlashcardCardState extends State<FlashcardCard>
                 : Transform(
               alignment: Alignment.center,
               transform: Matrix4.identity()..rotateY(3.14159),
-              child: _buildBackCard(),
+              child: _showBack ? _buildBackCard() : _buildFrontCard(),
             ),
           );
         },
@@ -101,13 +125,13 @@ class _FlashcardCardState extends State<FlashcardCard>
             Icon(
               Icons.quiz,
               size: 48,
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             const SizedBox(height: 24),
             Text(
               'Pytanie',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
               ),
             ),

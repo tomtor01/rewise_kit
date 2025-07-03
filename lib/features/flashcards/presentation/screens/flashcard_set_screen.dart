@@ -16,12 +16,12 @@ class FlashcardSetScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final flashcardSetsAsync = ref.watch(flashcardSetsByLessonProvider(lessonId));
+    final flashcardSetsAsync = ref.watch(
+      flashcardSetsByLessonProvider(lessonId),
+    );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Zestawy fiszek'),
-      ),
+      appBar: AppBar(title: const Text('Zestawy fiszek')),
       body: flashcardSetsAsync.when(
         data: (flashcardSets) {
           if (flashcardSets.isEmpty) {
@@ -29,11 +29,7 @@ class FlashcardSetScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.quiz_outlined,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.quiz_outlined, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
                     'Brak zestawów fiszek',
@@ -61,7 +57,9 @@ class FlashcardSetScreen extends ConsumerWidget {
           }
 
           return RefreshIndicator(
-            onRefresh: () => ref.refresh(flashcardSetsByLessonProvider(lessonId).future),
+            onRefresh:
+                () =>
+                    ref.refresh(flashcardSetsByLessonProvider(lessonId).future),
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: flashcardSets.length,
@@ -72,60 +70,75 @@ class FlashcardSetScreen extends ConsumerWidget {
                   onTap: () {
                     context.push('/flashcard-set/${flashcardSet.id}/study');
                   },
-                  onManage: isCreator ? () => _navigateToManageFlashcards(context, flashcardSet.id) : null,
+                  onManage:
+                      isCreator
+                          ? () => _navigateToManageFlashcards(
+                            context,
+                            flashcardSet.id,
+                          )
+                          : null,
                   isCreator: isCreator,
-                  onDelete: isCreator ? (setId) => _deleteFlashcardSet(context, ref, setId) : null,
+                  onDelete:
+                      isCreator
+                          ? (setId) => _deleteFlashcardSet(context, ref, setId)
+                          : null,
                 );
               },
             ),
           );
         },
-        loading: () => const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Ładowanie zestawów fiszek...'),
-            ],
-          ),
-        ),
-        error: (error, stackTrace) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Theme.of(context).colorScheme.error,
+        loading:
+            () => const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Ładowanie zestawów fiszek...'),
+                ],
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Błąd podczas ładowania',
-                style: Theme.of(context).textTheme.headlineSmall,
+            ),
+        error:
+            (error, stackTrace) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Błąd podczas ładowania',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    error.toString(),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed:
+                        () => ref.refresh(
+                          flashcardSetsByLessonProvider(lessonId).future,
+                        ),
+                    child: const Text('Spróbuj ponownie'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                error.toString(),
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.refresh(flashcardSetsByLessonProvider(lessonId).future),
-                child: const Text('Spróbuj ponownie'),
-              ),
-            ],
-          ),
-        ),
+            ),
       ),
-      floatingActionButton: isCreator
-          ? FloatingActionButton(
-        onPressed: () => _navigateToCreateFlashcardSet(context),
-        tooltip: 'Utwórz nowy zestaw fiszek',
-        child: const Icon(Icons.add),
-      )
-          : null,
+      floatingActionButton:
+          isCreator
+              ? FloatingActionButton(
+                onPressed: () => _navigateToCreateFlashcardSet(context),
+                tooltip: 'Utwórz nowy zestaw fiszek',
+                child: const Icon(Icons.add),
+              )
+              : null,
     );
   }
 
@@ -133,30 +146,40 @@ class FlashcardSetScreen extends ConsumerWidget {
     context.push('/lesson/$lessonId/flashcards/create');
   }
 
-  void _navigateToManageFlashcards(BuildContext context, String flashcardSetId) {
+  void _navigateToManageFlashcards(
+    BuildContext context,
+    String flashcardSetId,
+  ) {
     context.push('/flashcard-set/$flashcardSetId/manage');
   }
 
-  Future<void> _deleteFlashcardSet(BuildContext context, WidgetRef ref, String setId) async {
+  Future<void> _deleteFlashcardSet(
+    BuildContext context,
+    WidgetRef ref,
+    String setId,
+  ) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Usuń zestaw fiszek'),
-        content: const Text('Czy na pewno chcesz usunąć ten zestaw fiszek? Tej operacji nie można cofnąć.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Anuluj'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Usuń zestaw fiszek'),
+            content: const Text(
+              'Czy na pewno chcesz usunąć ten zestaw fiszek? Tej operacji nie można cofnąć.',
             ),
-            child: const Text('Usuń'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Anuluj'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+                child: const Text('Usuń'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (confirm == true) {

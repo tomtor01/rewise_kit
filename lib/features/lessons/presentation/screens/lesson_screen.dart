@@ -188,11 +188,6 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                 sliver: SliverList.list(
                   children: [
                     Text(
-                      'Autor: ${lesson.creatorId}',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
                       lesson.description,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
