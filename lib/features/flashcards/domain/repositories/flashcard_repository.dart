@@ -34,4 +34,8 @@ abstract class FlashcardRepository {
   });
 
   FutureResult<List<FlashcardSet>> getFlashcardSets({required String lessonId});
+
+  FutureResult<void> deleteFlashcardSet({
+    required String flashcardSetId,
+  });
 }

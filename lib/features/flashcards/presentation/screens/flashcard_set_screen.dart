@@ -184,8 +184,7 @@ class FlashcardSetScreen extends ConsumerWidget {
 
     if (confirm == true) {
       try {
-        // TODO: Dodaj DeleteFlashcardSetUseCase gdy będzie gotowy
-        // await ref.read(flashcardSetActionsProvider.notifier).deleteFlashcardSet(setId);
+        await ref.read(flashcardSetActionsProvider.notifier).deleteFlashcardSet(setId);
 
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -194,7 +193,7 @@ class FlashcardSetScreen extends ConsumerWidget {
               backgroundColor: Colors.green,
             ),
           );
-          // Odśwież listę
+          // Odświeża listę
           ref.invalidate(flashcardSetsByLessonProvider(lessonId));
         }
       } catch (error) {

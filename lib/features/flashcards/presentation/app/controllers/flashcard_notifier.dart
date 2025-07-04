@@ -9,6 +9,7 @@ import '../../../domain/entities/flashcard.dart';
 import '../../../domain/entities/flashcard_set.dart';
 import '../../../domain/usecases/create_flashcard_set_usecase.dart';
 import '../../../domain/usecases/create_flashcard_usecase.dart';
+import '../../../domain/usecases/delete_flashcard_set_usecase.dart';
 import '../../../domain/usecases/delete_flashcard_usecase.dart';
 import '../../../domain/usecases/get_flashcard_sets_usecase.dart';
 import '../../../domain/usecases/get_flashcards_by_set_id_usecase.dart';
@@ -21,10 +22,12 @@ part 'flashcard_notifier.g.dart';
 @riverpod
 class FlashcardSetActions extends _$FlashcardSetActions {
   late final CreateFlashcardSetUseCase _createFlashcardSet;
+  late final DeleteFlashcardSetUseCase _deleteFlashcardSet;
 
   @override
   void build() {
     _createFlashcardSet = sl<CreateFlashcardSetUseCase>();
+    _deleteFlashcardSet = sl<DeleteFlashcardSetUseCase>();
   }
 
   Future<void> createFlashcardSet(String title, String? description, String lessonId) async {
@@ -39,6 +42,17 @@ class FlashcardSetActions extends _$FlashcardSetActions {
     result.fold(
           (failure) => throw Exception(failure.message),
           (_) {}, // Sukces
+    );
+  }
+
+  Future<void> deleteFlashcardSet(String setId) async {
+    final result = await _deleteFlashcardSet(
+      DeleteFlashcardSetParams(setId: setId),
+    );
+
+    result.fold(
+          (failure) => throw Exception(failure.message),
+          (_) {},
     );
   }
 }

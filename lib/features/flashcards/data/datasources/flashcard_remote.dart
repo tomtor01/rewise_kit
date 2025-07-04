@@ -36,6 +36,10 @@ abstract class FlashcardRemoteDataSource {
   Future<List<FlashcardSetModel>> getFlashcardSets({
     required String lessonId,
   });
+
+  Future<void> deleteFlashcardSet({
+    required String flashcardSetId,
+  });
 }
 
 class FlashcardRemoteDataSourceImpl implements FlashcardRemoteDataSource {
@@ -177,5 +181,33 @@ class FlashcardRemoteDataSourceImpl implements FlashcardRemoteDataSource {
     return snapshot.docs
         .map((doc) => FlashcardSetModel.fromMap(doc.data(), doc.id))
         .toList();
+  }
+
+  @override
+  Future<void> deleteFlashcardSet({
+    required String flashcardSetId,
+  }) async {
+    try {
+      // Pobiera wszystkie fiszki z zestawu
+      final flashcardsSnapshot = await _firestore
+          .collection('flashcards')
+          .where('flashcardSetId', isEqualTo: flashcardSetId)
+          .get();
+
+      final batch = _firestore.batch();
+
+      // Usuwa wszystkie fiszki
+      for (final doc in flashcardsSnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+
+      // Usuwa zestaw fiszek
+      final setRef = _firestore.collection('flashcardSets').doc(flashcardSetId);
+      batch.delete(setRef);
+
+      await batch.commit();
+    } catch (e) {
+      throw Exception('Błąd podczas usuwania zestawu fiszek: $e');
+    }
   }
 }

@@ -98,5 +98,8 @@ Future<void> initUseCases() async {
     )
       ..registerLazySingleton(
       () => GetFlashcardSetsUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => DeleteFlashcardSetUseCase(sl<FlashcardRepository>()),
     );
 }

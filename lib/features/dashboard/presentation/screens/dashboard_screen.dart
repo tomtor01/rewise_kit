@@ -21,7 +21,7 @@ class DashboardScreen extends ConsumerWidget {
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       ),
       body: progressAsync.when(
-        data: (stats) => _buildDashboard(context, stats),
+        data: (stats) => _buildDashboard(context, stats, ref),
         loading: () => const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -64,10 +64,13 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDashboard(BuildContext context, UserProgressStats stats) {
+  Widget _buildDashboard(BuildContext context, UserProgressStats stats, WidgetRef ref) {
     return RefreshIndicator(
       onRefresh: () async {
-        // Tutaj można dodać logikę odświeżania
+        ref.invalidate(userProgressStatsProvider);
+        ref.invalidate(userDataNotifierProvider);
+
+        await ref.read(userProgressStatsProvider.future);
       },
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

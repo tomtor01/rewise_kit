@@ -133,4 +133,25 @@ class FlashcardRepositoryImpl implements FlashcardRepository {
       return Left(ServerFailure(message: e.toString(), statusCode: 500));
     }
   }
+
+  @override
+  FutureResult<void> deleteFlashcardSet({
+    required String flashcardSetId,
+  }) async {
+    try {
+      final user = auth.currentUser;
+      if (user == null) {
+        return const Left(
+          ServerFailure(message: 'User not logged in', statusCode: 401),
+        );
+      }
+
+      final result = await remoteDataSource.deleteFlashcardSet(
+        flashcardSetId: flashcardSetId,
+      );
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString(), statusCode: 500));
+    }
+  }
 }
