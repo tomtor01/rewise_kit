@@ -21,12 +21,27 @@ class LessonModel extends Lesson {
     );
   }
 
+  static String normalizeText(String input) {
+    return input
+        .toLowerCase()
+        .replaceAll('ą', 'a')
+        .replaceAll('ć', 'c')
+        .replaceAll('ę', 'e')
+        .replaceAll('ł', 'l')
+        .replaceAll('ń', 'n')
+        .replaceAll('ó', 'o')
+        .replaceAll('ś', 's')
+        .replaceAll('ź', 'z')
+        .replaceAll('ż', 'z');
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'title': title,
       'description': description,
       'creatorId': creatorId,
       'createdAt': Timestamp.fromDate(createdAt),
+      'searchTitle': normalizeText(title),
     };
   }
 }

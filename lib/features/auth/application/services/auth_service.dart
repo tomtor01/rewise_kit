@@ -10,22 +10,17 @@ class AuthService {
 
   AuthService(this._ref);
 
-  // Metoda, która uruchomi nasłuchiwanie
   void init() {
-    _ref.listen<AsyncValue<User?>>(
-      firebaseAuthStateProvider,
-          (previous, next) {
-        // Ta logika jest Ci już dobrze znana - to nasz "most"
-        if (next.isLoading) return;
+    _ref.listen<AsyncValue<User?>>(firebaseAuthStateProvider, (previous, next) {
+      if (next.isLoading) return;
 
-        final firebaseUser = next.valueOrNull;
-        if (firebaseUser != null) {
-          final appUser = UserModel.fromFirebaseUser(firebaseUser);
-          _ref.read(currentUserProvider.notifier).setUser(appUser);
-        } else {
-          _ref.read(currentUserProvider.notifier).clearUser();
-        }
-      },
-    );
+      final firebaseUser = next.valueOrNull;
+      if (firebaseUser != null) {
+        final appUser = UserModel.fromFirebaseUser(firebaseUser);
+        _ref.read(currentUserProvider.notifier).setUser(appUser);
+      } else {
+        _ref.read(currentUserProvider.notifier).clearUser();
+      }
+    });
   }
 }

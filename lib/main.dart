@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextTheme textTheme = createTextTheme(context, "Lato", "Acme");
+    TextTheme textTheme = createTextTheme(context, "Lato", "Alegreya");
     MaterialTheme theme = MaterialTheme(textTheme);
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: Cache.instance.themeModeNotifier,

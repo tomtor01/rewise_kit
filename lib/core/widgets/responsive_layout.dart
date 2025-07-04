@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rewise_kit/core/widgets/main_app_bar.dart';
 
 enum WindowSizeClass {
   compact, // < 600px szerokości
@@ -196,7 +195,6 @@ class AdaptiveScaffoldWithNavigation extends StatelessWidget {
     if (windowSizeClass != WindowSizeClass.compact) {
       // NavigationRail dla large
       return Scaffold(
-        appBar: MainAppBar(windowSizeClass: windowSizeClass),
         body: Row(
           children: [
             NavigationRail(
@@ -221,7 +219,6 @@ class AdaptiveScaffoldWithNavigation extends StatelessWidget {
     } else {
       // NavigationBar dla mniejszych
       return Scaffold(
-        appBar: MainAppBar(windowSizeClass: windowSizeClass),
         body: child,
         bottomNavigationBar: NavigationBar(
           selectedIndex: selectedIndex,

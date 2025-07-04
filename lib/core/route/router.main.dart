@@ -10,15 +10,12 @@ final router = GoRouter(
     final bool loggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/register';
 
     if (!loggedIn) {
-      // Jeśli użytkownik nie jest zalogowany, może iść tylko do /login lub /register
       return loggingIn ? null : '/login';
     }
 
-    // Jeśli użytkownik jest zalogowany i próbuje wejść na /login lub /register, przekieruj go do strony głównej
     if (loggingIn) {
       return '/';
     }
-
     // W przeciwnym razie nie ma potrzeby przekierowania
     return null;
   },
@@ -59,11 +56,55 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/lesson/:lessonId',
-      // Dodaj ten klucz, aby trasa renderowała się na głównym nawigatorze
+      // Ważny klucz, aby trasa renderowała się na głównym nawigatorze
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) {
         final lessonId = state.pathParameters['lessonId']!;
         return LessonScreen(lessonId: lessonId);
+      },
+    ),
+    GoRoute(
+      path: '/lesson/:lessonId/flashcards',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) {
+        final lessonId = state.pathParameters['lessonId']!;
+        final isCreator = state.uri.queryParameters['isCreator'] == 'true';
+        return FlashcardSetScreen(
+          lessonId: lessonId,
+          isCreator: isCreator,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/lesson/:lessonId/flashcards/create',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) {
+        final lessonId = state.pathParameters['lessonId']!;
+        return FlashcardSetFormScreen(lessonId: lessonId);
+      },
+    ),
+    GoRoute(
+      path: '/flashcard-set/:setId/study',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) {
+        final setId = state.pathParameters['setId']!;
+        return FlashcardStudyScreen(flashcardSetId: setId);
+      },
+    ),
+    GoRoute(
+      path: '/flashcard-set/:setId/manage',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) {
+        final setId = state.pathParameters['setId'];
+        print('SetId: $setId'); // Debug
+
+        if (setId == null) {
+          return const Scaffold(
+            body: Center(child: Text('Brak ID zestawu')),
+          );
+        }
+
+        return ManageFlashcardScreen(flashcardSetId: setId);
       },
     ),
     GoRoute(

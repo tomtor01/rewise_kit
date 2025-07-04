@@ -10,14 +10,13 @@ Future<void> init() async {
 
 Future<void> cacheInit() async {
   final sharedPrefs = await SharedPreferences.getInstance();
-  const secureStorage = FlutterSecureStorage();
 
   sl.registerLazySingleton(() => sharedPrefs);
-  sl.registerLazySingleton(() => secureStorage);
   sl.registerLazySingleton<CacheHelper>(
-    () => CacheHelper(sl<SharedPreferences>(), sl<FlutterSecureStorage>()),
+    () => CacheHelper(sl<SharedPreferences>()),
   );
 }
+
 
 Future<void> initData() async {
   sl
@@ -38,11 +37,23 @@ Future<void> initData() async {
         sl<FirebaseAuth>(),
       ),
     )
-      ..registerLazySingleton<DashboardRemoteDataSource>(
+    ..registerLazySingleton<DashboardRemoteDataSource>(
       () => DashboardRemoteDataSourceImpl(sl<FirebaseFirestore>()),
     )
     ..registerLazySingleton<DashboardRepository>(
-      () => DashboardRepositoryImpl(sl<DashboardRemoteDataSource>()),
+      () => DashboardRepositoryImpl(
+        sl<DashboardRemoteDataSource>(),
+        sl<FirebaseAuth>(),
+      ),
+    )
+    ..registerLazySingleton<FlashcardRemoteDataSource>(
+      () => FlashcardRemoteDataSourceImpl(sl<FirebaseFirestore>()),
+    )
+    ..registerLazySingleton<FlashcardRepository>(
+      () => FlashcardRepositoryImpl(
+        sl<FlashcardRemoteDataSource>(),
+        sl<FirebaseAuth>(),
+      ),
     );
 }
 
@@ -60,5 +71,32 @@ Future<void> initUseCases() async {
     ..registerLazySingleton(() => UnsaveLessonUseCase(sl<LessonRepository>()))
     ..registerLazySingleton(() => SearchLessonsUseCase(sl<LessonRepository>()))
     ..registerLazySingleton(() => GetLessonByIdUseCase(sl<LessonRepository>()))
-    ..registerLazySingleton(() => GetSavedLessonsUseCase(sl<LessonRepository>()));
+    ..registerLazySingleton(
+      () => GetSavedLessonsUseCase(sl<LessonRepository>()),
+    )
+    ..registerLazySingleton(() => DeleteLessonUseCase(sl<LessonRepository>()))
+    ..registerLazySingleton(
+      () => CreateFlashcardUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => GetFlashcardsBySetIdUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => UpdateFlashcardUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => DeleteFlashcardUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => UpdateFlashcardsProgressUseCase(sl<DashboardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => CreateFlashcardSetUseCase(sl<FlashcardRepository>()),
+    )
+      ..registerLazySingleton(
+      () => GetFlashcardSetsUseCase(sl<FlashcardRepository>()),
+    )
+    ..registerLazySingleton(
+      () => DeleteFlashcardSetUseCase(sl<FlashcardRepository>()),
+    );
 }

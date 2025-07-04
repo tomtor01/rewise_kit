@@ -6,7 +6,7 @@ part of 'lesson_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$lessonActionsHash() => r'1ba1c936d47094c615028a8b3ee2647b008218cd';
+String _$lessonActionsHash() => r'92daefc66f97f83e5f2e6df3a25578c1d20fe3b2';
 
 /// See also [LessonActions].
 @ProviderFor(LessonActions)

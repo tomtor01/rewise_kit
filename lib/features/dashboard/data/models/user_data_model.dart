@@ -1,31 +1,34 @@
 import '../../domain/entities/user_data.dart';
 
 class UserDataModel extends UserData {
-  const UserDataModel({required super.savedLessonIds});
+  const UserDataModel({
+    required super.savedLessonIds,
+    required super.flashcardProgress,
+  });
 
-  // Konwertuje mapę (np. z Firestore) na model
   factory UserDataModel.fromMap(Map<String, dynamic> map) {
     return UserDataModel(
-      savedLessonIds: Set<String>.from(map['savedLessonIds'] as List<dynamic>),
+      savedLessonIds: Set<String>.from(map['savedLessonIds'] as List<dynamic>? ?? []),
+      flashcardProgress: Map<String, bool>.from(map['flashcardProgress'] as Map<String, dynamic>? ?? {}),
     );
   }
 
-  // Pusty model
-  const UserDataModel.empty() : super(savedLessonIds: const {});
+  const UserDataModel.empty() : super.empty();
 
-  // Konwertuje model na mapę (do zapisu w Firestore)
   Map<String, dynamic> toMap() {
     return {
       'savedLessonIds': savedLessonIds.toList(),
+      'flashcardProgress': flashcardProgress,
     };
   }
 
-  // Metoda copyWith do łatwej modyfikacji obiektu
   UserDataModel copyWith({
     Set<String>? savedLessonIds,
+    Map<String, bool>? flashcardProgress,
   }) {
     return UserDataModel(
       savedLessonIds: savedLessonIds ?? this.savedLessonIds,
+      flashcardProgress: flashcardProgress ?? this.flashcardProgress,
     );
   }
 }
