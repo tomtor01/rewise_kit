@@ -10,7 +10,10 @@ abstract class AuthRepository {
     required String passwordConfirmation,
   });
 
-  FutureResult<User> loginUser({required String email, required String password});
+  FutureResult<User> loginUser({
+    required String email,
+    required String password,
+  });
 
   FutureResult<void> logoutUser();
 }

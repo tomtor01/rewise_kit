@@ -37,7 +37,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
       return UserModel.fromFirebaseUser(result.user!);
     } on FirebaseAuthException catch (e) {
-      throw ServerException(message: e.message ?? 'Unknown error', statusCode: 500);
+      throw ServerException(
+        message: e.message ?? 'Unknown error',
+        statusCode: 500,
+      );
     }
   }
 
@@ -52,11 +55,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         password: password,
       );
       if (result.user == null) {
-        throw const ServerException(message: 'User not created', statusCode: 500);
+        throw const ServerException(
+          message: 'User not created',
+          statusCode: 500,
+        );
       }
       return UserModel.fromFirebaseUser(result.user!);
     } on FirebaseAuthException catch (e) {
-      throw ServerException(message: e.message ?? 'Unknown error', statusCode: 500);
+      throw ServerException(
+        message: e.message ?? 'Unknown error',
+        statusCode: 500,
+      );
     }
   }
 
@@ -65,7 +74,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await _firebaseAuth.signOut();
     } on FirebaseAuthException catch (e) {
-      throw ServerException(message: e.message ?? 'Unknown error', statusCode: 500);
+      throw ServerException(
+        message: e.message ?? 'Unknown error',
+        statusCode: 500,
+      );
     }
   }
 }
