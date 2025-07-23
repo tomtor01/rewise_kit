@@ -46,7 +46,7 @@ class HomePageHeader extends StatelessWidget implements PreferredSizeWidget {
                 context,
               ).colorScheme.onSurface.withAlpha(178),
               indicatorWeight: 3,
-              tabs: const [Tab(text: 'Utworzone'), Tab(text: 'Zapisane')],
+              tabs: tabs,
             ),
         ],
       ),

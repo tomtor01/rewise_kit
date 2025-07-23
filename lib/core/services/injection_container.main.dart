@@ -17,9 +17,6 @@ Future<void> cacheInit() async {
   );
 }
 
-Future<void> initServices() async {
-
-}
 
 Future<void> initData() async {
   sl
