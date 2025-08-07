@@ -4,10 +4,14 @@ final router = GoRouter(
   navigatorKey: rootNavigatorKey,
   debugLogDiagnostics: true,
   initialLocation: '/',
-  refreshListenable: GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges()),
+  refreshListenable: GoRouterRefreshStream(
+    FirebaseAuth.instance.authStateChanges(),
+  ),
   redirect: (BuildContext context, GoRouterState state) {
     final bool loggedIn = FirebaseAuth.instance.currentUser != null;
-    final bool loggingIn = state.matchedLocation == '/login' || state.matchedLocation == '/register';
+    final bool loggingIn =
+        state.matchedLocation == '/login' ||
+        state.matchedLocation == '/register';
 
     if (!loggedIn) {
       return loggingIn ? null : '/login';
@@ -69,10 +73,7 @@ final router = GoRouter(
       builder: (context, state) {
         final lessonId = state.pathParameters['lessonId']!;
         final isCreator = state.uri.queryParameters['isCreator'] == 'true';
-        return FlashcardSetScreen(
-          lessonId: lessonId,
-          isCreator: isCreator,
-        );
+        return FlashcardSetScreen(lessonId: lessonId, isCreator: isCreator);
       },
     ),
     GoRoute(
@@ -99,9 +100,7 @@ final router = GoRouter(
         print('SetId: $setId'); // Debug
 
         if (setId == null) {
-          return const Scaffold(
-            body: Center(child: Text('Brak ID zestawu')),
-          );
+          return const Scaffold(body: Center(child: Text('Brak ID zestawu')));
         }
 
         return ManageFlashcardScreen(flashcardSetId: setId);
@@ -110,11 +109,7 @@ final router = GoRouter(
     GoRoute(
       path: '/profile',
       builder: (context, state) {
-        return ProfileScreen(
-          appBar: AppBar(
-            title: const Text('Twój profil'),
-          ),
-        );
+        return ProfileScreen(appBar: AppBar(title: const Text('Twój profil')));
       },
     ),
   ],
